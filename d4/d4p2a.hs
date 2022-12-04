@@ -9,8 +9,7 @@ import Data.Set (fromList, Set, disjoint)
 getMeAnswer :: String -> Int
 getMeAnswer str = length $ filter (\x -> x) (map (\ (a:b:[]) -> not $ disjoint (a::Set Int) (b::Set Int)) [[fromList $ (\ (a:b:[]) -> [min a b .. max a b]) [read e | e <- splitOn "-" es] | es <- splitOn "," ls] | ls <- (lines str)])
 
-main = do  
-        let list = []
+main = do
         handle <- openFile "d4/d4.txt" ReadMode
         contents <- hGetContents handle
         print $ getMeAnswer contents

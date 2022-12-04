@@ -16,8 +16,7 @@ getMaxCalories :: [Int] -> Int
 getMaxCalories [] = error "No Elfs in Input [Error 1]"
 getMaxCalories xs = maximum xs
 
-main = do  
-        let list = []
+main = do
         handle <- openFile "d1/d1.txt" ReadMode
         contents <- hGetContents handle
         print $ getMaxCalories $ getElfSums $ translateInput contents

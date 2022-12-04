@@ -23,8 +23,7 @@ getSum :: [Char] -> Int
 getSum [] = 0
 getSum (x:xs) = getValue x + getSum xs
 
-main = do  
-        let list = []
+main = do
         handle <- openFile "d3/d3.txt" ReadMode
         contents <- hGetContents handle
         print $ getSum $ translateInput contents

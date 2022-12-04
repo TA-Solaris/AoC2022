@@ -20,7 +20,6 @@ countTrue (True:xs) = 1 + countTrue xs
 countTrue (False:xs) = countTrue xs
 
 main = do  
-        let list = []
         handle <- openFile "d4/d4.txt" ReadMode
         contents <- hGetContents handle
         print $ countTrue $ findSubsets $ translateInput contents

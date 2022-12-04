@@ -22,8 +22,7 @@ getTotalScores :: [(Char, Char)] -> Int
 getTotalScores (x:xs) = getScore x + getTotalScores xs
 getTotalScores [] = 0
 
-main = do  
-        let list = []
+main = do
         handle <- openFile "d2/d2.txt" ReadMode
         contents <- hGetContents handle
         print $ getTotalScores $ translateInput contents

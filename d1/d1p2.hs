@@ -24,8 +24,7 @@ getTopThree xs = child $ reverse $ sort xs
         child (a:b:c:_) = sum [a,b,c]
         child _ = error "Not enough elves [Error 2]"
 
-main = do  
-        let list = []
+main = do
         handle <- openFile "d1/d1.txt" ReadMode
         contents <- hGetContents handle
         print $ getTopThree $ getElfSums $ translateInput contents
