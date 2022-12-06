@@ -1,5 +1,8 @@
-# Advent of Code 2022
+# 🎄 Advent of Code 2022
 
+<!--- advent_readme_stars table --->
+
+## Epic Comments
 I'm doing this year of advent of code in Haskell, feel free to come along for the ride.
 
 I am using a package for splitting strings, you can install it using this command:
