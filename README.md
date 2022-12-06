@@ -1,3 +1,5 @@
+<img src="./.assets/haskell-heart-white.png" width="164">
+
 # 🎄 Advent of Code 2022
 
 <!--- advent_readme_stars table --->
