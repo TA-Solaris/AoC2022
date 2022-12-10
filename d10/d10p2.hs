@@ -35,10 +35,10 @@ absDiff :: Num a => a -> a -> a
 absDiff n = abs . (n-)  
 
 getScreening :: His -> String
-getScreening ((x, c):his) | absDiff x ((c `mod` 40) - 1) <= 1 && c `mod` 40 == 0 = '#':'\n':(getScreening his)
-                          | absDiff x ((c `mod` 40) - 1) <= 1 = '#':(getScreening his)
-                          | c `mod` 40 == 0 = '.':'\n':(getScreening his)
-                          | otherwise = '.':(getScreening his)
+getScreening ((x, c):his) | absDiff x ((c - 1) `mod` 40) <= 1 && c `mod` 40 == 0 = '#':'\n':(getScreening his)
+                          | absDiff x ((c - 1) `mod` 40) <= 1 = '#':(getScreening his)
+                          | c `mod` 40 == 0 = ' ':'\n':(getScreening his)
+                          | otherwise = ' ':(getScreening his)
 getScreening [] = ""
 
 -- Part2
