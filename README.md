@@ -19,6 +19,7 @@
 | [Day 10](https://adventofcode.com/2022/day/10) | [d10p2.hs](d10/d10p2.hs) | ⭐ | ⭐ |
 | [Day 11](https://adventofcode.com/2022/day/11) | [d11p2.hs](d11/d11p2.hs) | ⭐ | ⭐ |
 | [Day 12](https://adventofcode.com/2022/day/12) | [d12p2.hs](d12/d12p2.hs) | ⭐ | ⭐ |
+| [Day 13](https://adventofcode.com/2022/day/13) | [d13p2.hs](d13/d13p2.hs) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
 
 ## Epic Comments
