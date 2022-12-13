@@ -19,7 +19,7 @@ data Command = U | D | L | R
 -- For translating the input
 translateInput :: String -> [Command]
 translateInput [] = []
-translateInput str = foldr (++) [] [(\(c:n:[]) -> replicate (read n) (read c)) $ splitOn " " line | line <- lines str]
+translateInput str = concat [(\[c, n] -> replicate (read n) (read c)) $ splitOn " " line | line <- lines str]
 
 -- Defining helper functions
 absDiff :: Num a => a -> a -> a
@@ -51,8 +51,7 @@ sim1 (Head (hx, hy), Tail (tx, ty) his) R | notSameCol (hx + 1, hy) (tx, ty) && 
 sim1 _ _ = error "Must be in the format (Head, Tail) [Error 1]"
 
 simulate :: (End, End) -> [Command] -> (End, End)
-simulate state [] = state
-simulate state (cmd:cmds) = simulate (sim1 state cmd) cmds
+simulate = foldl sim1
 
 historySize :: (End, End) -> Int
 historySize (Head _, Tail _ his) = length his

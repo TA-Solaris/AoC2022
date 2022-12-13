@@ -7,11 +7,11 @@ import Data.Set (fromList, Set, isSubsetOf)
 
 translateInput :: String -> [[Set Int]]
 translateInput [] = []
-translateInput str = [[fromList $ (\ (a:b:[]) -> [min a b .. max a b]) [read e | e <- splitOn "-" es] | es <- splitOn "," ls] | ls <- (lines str)]
+translateInput str = [[fromList $ (\[a, b] -> [min a b .. max a b]) [read e | e <- splitOn "-" es] | es <- splitOn "," ls] | ls <- lines str]
 
 findSubsets :: [[Set Int]] -> [Bool]
 findSubsets [] = []
-findSubsets ((a:b:[]):xs) = (isSubsetOf a b || isSubsetOf b a) : findSubsets xs
+findSubsets ([a, b]:xs) = (isSubsetOf a b || isSubsetOf b a) : findSubsets xs
 findSubsets  _ = error "Wrong number of inputs [Error 1]"
 
 countTrue :: [Bool] -> Int

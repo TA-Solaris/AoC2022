@@ -19,17 +19,17 @@ data Command = U | D | L | R
 -- For translating the input
 translateInput :: String -> [Command]
 translateInput [] = []
-translateInput str = foldr (++) [] [(\(c:n:[]) -> replicate (read n) (read c)) $ splitOn " " line | line <- lines str]
+translateInput str = concat [(\[c, n] -> replicate (read n) (read c)) $ splitOn " " line | line <- lines str]
 
 -- Defining helper functions
 absDiff :: Num a => a -> a -> a
 absDiff n = abs . (n-)
 
 move :: End -> Command -> End
-move (Head (hx, hy)) U = (Head (hx, hy - 1))
-move (Head (hx, hy)) D = (Head (hx, hy + 1))
-move (Head (hx, hy)) L = (Head (hx - 1, hy))
-move (Head (hx, hy)) R = (Head (hx + 1, hy))
+move (Head (hx, hy)) U = Head (hx, hy - 1)
+move (Head (hx, hy)) D = Head (hx, hy + 1)
+move (Head (hx, hy)) L = Head (hx - 1, hy)
+move (Head (hx, hy)) R = Head (hx + 1, hy)
 move _ _ = error "Should only move heads [Error 3]"
 
 follow :: (End, End) -> (End, End)
@@ -54,12 +54,12 @@ follow es@(Head (hx, hy), Head (tx, ty)) | absDiff hx tx > 1 && hx > tx && hy ==
 follow _ = error "Must be in the format (Head, Tail) or (Head, Head) [Error 1]"
 
 followAll :: [End] -> [End]
-followAll (a:b:xs) = (\(f, s) -> f : (followAll (s:xs))) $ follow (a, b)
+followAll (a:b:xs) = (\(f, s) -> f : followAll (s:xs)) $ follow (a, b)
 followAll x = x
 
 simulate :: [End] -> [Command] -> [End]
 simulate state [] = state
-simulate (head:state) (cmd:cmds) = simulate (followAll ((move head cmd):state)) cmds
+simulate (head:state) (cmd:cmds) = simulate (followAll (move head cmd:state)) cmds
 
 historySize :: [End] -> Int
 historySize [] = error "Must have a tail [Error 2]"
@@ -68,7 +68,7 @@ historySize ((Tail _ his):_) = length his
 
 -- Parts
 part2 :: [Command] -> Int
-part2 cmds = historySize $ simulate ((replicate 9 (Head (0, 0))) ++ [Tail (0, 0) (singleton (0, 0))]) cmds
+part2 cmds = historySize $ simulate (replicate 9 (Head (0, 0)) ++ [Tail (0, 0) (singleton (0, 0))]) cmds
 
 main = do
         handle <- openFile "d9/d9.txt" ReadMode

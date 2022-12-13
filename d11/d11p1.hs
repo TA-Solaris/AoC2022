@@ -19,7 +19,7 @@ translateInput [] = []
 translateInput str = cleanInput str
     where
         cleanInput :: String -> [Monkey]
-        cleanInput str = [Monkey [read x | x <- splitOn "," (splitOn ":" monkey !! 1)] ((\sec -> if sec == "old" then operation '^' 0 else operation (splitOn " " (splitOn ":" monkey !! 2) !! 0 !! 0) (read (splitOn " " (splitOn ":" monkey !! 2) !! 1))) (splitOn " " (splitOn ":" monkey !! 2) !! 1)) (test (read (splitOn ":" monkey !! 3)) (read (splitOn ":" monkey !! 4)) (read (splitOn ":" monkey !! 5))) 0 | monkey <- splitOn "\n\n" $ unpack $ replace (pack "\n    If false: throw to monkey ") (pack ":") $ replace (pack "\n    If true: throw to monkey ") (pack ":") $ replace (pack "\n  Test: divisible by ") (pack ":") $ replace (pack "\n  Operation: new = old ") (pack ":") $ replace (pack "\n  Starting items: ") (pack "") $ replace (pack ", ") (pack ",") $ replace (pack "Monkey ") (pack "") (pack str)]
+        cleanInput str = [Monkey [read x | x <- splitOn "," (splitOn ":" monkey !! 1)] ((\sec -> if sec == "old" then operation '^' 0 else operation (head $ head $ splitOn " " (splitOn ":" monkey !! 2)) (read (splitOn " " (splitOn ":" monkey !! 2) !! 1))) (splitOn " " (splitOn ":" monkey !! 2) !! 1)) (test (read (splitOn ":" monkey !! 3)) (read (splitOn ":" monkey !! 4)) (read (splitOn ":" monkey !! 5))) 0 | monkey <- splitOn "\n\n" $ unpack $ replace (pack "\n    If false: throw to monkey ") (pack ":") $ replace (pack "\n    If true: throw to monkey ") (pack ":") $ replace (pack "\n  Test: divisible by ") (pack ":") $ replace (pack "\n  Operation: new = old ") (pack ":") $ replace (pack "\n  Starting items: ") (pack "") $ replace (pack ", ") (pack ",") $ replace (pack "Monkey ") (pack "") (pack str)]
 
 -- Defining helper functions
 operation :: Char -> Int -> Int -> Int
@@ -43,7 +43,7 @@ nreplace n v (x:xs) | n == 0 = v:xs
                     | otherwise = x:nreplace (n-1) v xs
 
 throw :: Int -> Int -> [Monkey] -> [Monkey]
-throw from to monkeys = nreplace from ((\(Monkey (_:list) op tst count) -> Monkey list op tst count) (monkeys !! from)) (nreplace to ((\(Monkey list op tst count) -> Monkey (list ++ [getItems (monkeys !! from) !! 0]) op tst count) (monkeys !! to)) monkeys)
+throw from to monkeys = nreplace from ((\(Monkey (_:list) op tst count) -> Monkey list op tst count) (monkeys !! from)) (nreplace to ((\(Monkey list op tst count) -> Monkey (list ++ [head (getItems (monkeys !! from))]) op tst count) (monkeys !! to)) monkeys)
 
 getItems :: Monkey -> [Int]
 getItems (Monkey items _ _ _) = items
@@ -58,8 +58,8 @@ getCount :: Monkey -> Int
 getCount (Monkey _ _ _ count) = count
 
 turn :: Int -> [Monkey] -> [Monkey]
-turn i monkeys | (getItems (monkeys !! i)) == [] = monkeys
-               | otherwise = turn i (throw i (getTest (monkeys !! i) (calm $ (getOperation (monkeys !! i)) $ getItems (monkeys !! i) !! 0)) (nreplace i (Monkey ((calm $ (getOperation (monkeys !! i)) ((\(x:_) -> x) $ getItems (monkeys !! i))):((\(_:xs) -> xs) $ getItems (monkeys !! i))) (getOperation (monkeys !! i)) (getTest (monkeys !! i)) (getCount (monkeys !! i) + 1)) monkeys))
+turn i monkeys | null (getItems (monkeys !! i)) = monkeys
+               | otherwise = turn i (throw i (getTest (monkeys !! i) (calm $ getOperation (monkeys !! i) $ head (getItems (monkeys !! i)))) (nreplace i (Monkey (calm (getOperation (monkeys !! i) ((\(x:_) -> x) $ getItems (monkeys !! i))):(\(_:xs) -> xs) (getItems (monkeys !! i))) (getOperation (monkeys !! i)) (getTest (monkeys !! i)) (getCount (monkeys !! i) + 1)) monkeys))
 
 round :: [Monkey] -> [Monkey]
 round monkeys = roundHelper 0 monkeys

@@ -21,12 +21,11 @@ translateInput str = [getCommand line | line <- lines str]
 
 -- Defining helper functions
 runCommand :: Command -> CPU -> CPU
-runCommand Noop (x, c, his) = (x, c + 1, ((x, c + 1):his))
-runCommand (Addx v) (x, c, his) = (x + v, c + 2, ((x, c + 2):(x, c + 1):his))
+runCommand Noop (x, c, his) = (x, c + 1, (x, c + 1):his)
+runCommand (Addx v) (x, c, his) = (x + v, c + 2, (x, c + 2):(x, c + 1):his)
 
 runCommands :: [Command] -> CPU -> CPU
-runCommands (cmd:cmds) cpu = runCommands cmds (runCommand cmd cpu)
-runCommands [] cpu = cpu
+runCommands cmds cpu = foldl (flip runCommand) cpu cmds
 
 getHistory :: CPU -> His
 getHistory (_, _, his) = reverse his
@@ -35,10 +34,10 @@ absDiff :: Num a => a -> a -> a
 absDiff n = abs . (n-)  
 
 getScreening :: His -> String
-getScreening ((x, c):his) | absDiff x ((c - 1) `mod` 40) <= 1 && c `mod` 40 == 0 = '#':'\n':(getScreening his)
-                          | absDiff x ((c - 1) `mod` 40) <= 1 = '#':(getScreening his)
-                          | c `mod` 40 == 0 = ' ':'\n':(getScreening his)
-                          | otherwise = ' ':(getScreening his)
+getScreening ((x, c):his) | absDiff x ((c - 1) `mod` 40) <= 1 && c `mod` 40 == 0 = '#':'\n':getScreening his
+                          | absDiff x ((c - 1) `mod` 40) <= 1 = '#':getScreening his
+                          | c `mod` 40 == 0 = ' ':'\n':getScreening his
+                          | otherwise = ' ':getScreening his
 getScreening [] = ""
 
 -- Part2

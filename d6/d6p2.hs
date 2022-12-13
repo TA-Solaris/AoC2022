@@ -11,7 +11,7 @@ doTaTing str = evilChild str 14
         -- Muahahaha infinite power
         evilChild :: String -> Int -> Int
         -- Welcome to hell
-        evilChild (x:xs) n | 14 == (length $ toList $ fromList $ take 14 (x:xs)) = n
+        evilChild (x:xs) n | 14 == length (toList $ fromList $ take 14 (x:xs)) = n
                            | otherwise = evilChild xs (n+1)
 
 main = do

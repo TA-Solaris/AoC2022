@@ -28,22 +28,22 @@ nreplace n v (x:xs) | n == 0 = v:xs
 
 mark :: Int -> Int -> [[(Int,Visability)]] -> Visability -> [[(Int,Visability)]]
 mark _ _ [] _ = []
-mark x y grid new | 0 <= x && x <= (length (grid !! 0) - 1) && 0 <= y && y <= (length grid - 1) = nreplace y (nreplace x (fst ((grid !! y) !! x), new) (grid !! y)) grid
+mark x y grid new | 0 <= x && x <= (length (head grid) - 1) && 0 <= y && y <= (length grid - 1) = nreplace y (nreplace x (fst ((grid !! y) !! x), new) (grid !! y)) grid
                   | otherwise = grid
 
 countVisible :: [[(Int,Visability)]] -> Int
-countVisible grid = length $ filter (== Visible) $ map snd $ foldr (++) [] (grid)
+countVisible grid = length $ filter (== Visible) $ map snd $ concat grid
 
 markEdges :: [[(Int,Visability)]] -> [[(Int,Visability)]]
 markEdges grid = transpose $ markBottom $ markTop $ transpose $ markBottom $ markTop grid
     where
         markTop,markBottom :: [[(Int,Visability)]] -> [[(Int,Visability)]]
-        markTop grid = nreplace 0 (map (\(n, _) -> (n, Visible)) (grid !! 0)) grid
+        markTop grid = nreplace 0 (map (\(n, _) -> (n, Visible)) (head grid)) grid
         markBottom grid = nreplace (length grid - 1) (map (\(n, _) -> (n, Visible)) (grid !! (length grid - 1))) grid
         -- I cba to write mark left and mark right
 
 markDirection :: Int -> Int -> [[(Int,Visability)]] -> Direction -> Int -> [[(Int,Visability)]]
-markDirection x y grid dir last | x < 0 || x >= length (grid !! 0) || y < 0 || y >= length grid || (dir == L && x <= 0) || (dir == R && x >= length (grid !! 0) - 1) || (dir == U && y <= 0) || (dir == D && y >= length grid - 1) = grid -- Protecting against index errors
+markDirection x y grid dir last | x < 0 || x >= length (head grid) || y < 0 || y >= length grid || (dir == L && x <= 0) || (dir == R && x >= length (head grid) - 1) || (dir == U && y <= 0) || (dir == D && y >= length grid - 1) = grid -- Protecting against index errors
                                 | dir == U && last < fst ((grid !! (y - 1)) !! x) = markDirection x (y - 1) (mark x (y - 1) grid Visible) dir (fst ((grid !! (y - 1)) !! x))
                                 | dir == U = markDirection x (y - 1) grid dir last
                                 | dir == D && last < fst ((grid !! (y + 1)) !! x) = markDirection x (y + 1) (mark x (y + 1) grid Visible) dir (fst ((grid !! (y + 1)) !! x))
@@ -58,14 +58,14 @@ lookIn :: [[(Int,Visability)]] -> [[(Int,Visability)]]
 lookIn grid = lookRight (lookLeft (lookBottom (lookTop grid 0) 0) 0) 0
 
 lookTop,lookLeft,lookRight,lookBottom :: [[(Int,Visability)]] -> Int -> [[(Int,Visability)]]
-lookTop grid x | x >= length (grid !! 0) = grid
-               | otherwise = lookTop (markDirection x 0 grid D (fst ((grid !! 0) !! x))) (x + 1)
-lookBottom grid x | x >= length (grid !! 0) = grid
+lookTop grid x | x >= length (head grid) = grid
+               | otherwise = lookTop (markDirection x 0 grid D (fst (head grid !! x))) (x + 1)
+lookBottom grid x | x >= length (head grid) = grid
                   | otherwise = lookBottom (markDirection x (length grid - 1) grid U (fst ((grid !! (length grid - 1)) !! x))) (x + 1)
 lookLeft grid y | y >= length grid = grid
-                | otherwise = lookLeft (markDirection 0 y grid R (fst ((grid !! y) !! 0))) (y + 1)
+                | otherwise = lookLeft (markDirection 0 y grid R (fst (head (grid !! y)))) (y + 1)
 lookRight grid y | y >= length grid = grid
-                 | otherwise = lookRight (markDirection (length (grid !! 0) - 1) y grid L (fst ((grid !! y) !! (length (grid !! 0) - 1)))) (y + 1)
+                 | otherwise = lookRight (markDirection (length (head grid) - 1) y grid L (fst ((grid !! y) !! (length (head grid) - 1)))) (y + 1)
 
 scan :: Int -> [Int] -> Int
 scan _ [] = 0
@@ -76,7 +76,7 @@ allDirections :: Int -> Int -> [[Int]] -> [Int]
 allDirections x y grid = map (scan ((grid !! y) !! x)) $ getLines x y grid
 
 getLines :: Int -> Int -> [[Int]] -> [[Int]]
-getLines x y grid = ((\(l, r) -> [(reverse l), (drop 1 r)]) (splitAt x (grid !! y))) ++ ((\(l, r) -> [(reverse l), (drop 1 r)]) (splitAt y ((transpose grid) !! x)))
+getLines x y grid = (\(l, r) -> [reverse l, drop 1 r]) (splitAt x (grid !! y)) ++ (\(l, r) -> [reverse l, drop 1 r]) (splitAt y (transpose grid !! x))
 
 -- Tests
 test :: IO ()
@@ -190,14 +190,14 @@ test = do
 
 -- Parts
 part1 :: [[(Int,Visability)]] -> Int
-part1 grid = countVisible $ lookIn $ markEdges $ grid
+part1 grid = countVisible $ lookIn $ markEdges grid
 
 part2 :: [[Int]] -> Int
-part2 grid = maximum [foldr (*) 1 (allDirections x y grid) | x <- [0 .. length (grid !! 0) - 1], y <- [0 .. length grid - 1]]
+part2 grid = maximum [product (allDirections x y grid) | x <- [0 .. length (head grid) - 1], y <- [0 .. length grid - 1]]
 
 main = do
         handle <- openFile "d8/d8.txt" ReadMode
         contents <- hGetContents handle
-        test
+        --test
         print $ part2 $ translateInput' contents
         hClose handle

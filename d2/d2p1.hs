@@ -4,7 +4,7 @@ import Control.Monad
 
 translateInput :: String -> [(Char, Char)]
 translateInput [] = []
-translateInput str = [(\ (a:b:[]) -> (a,b)) [x | x <- ls, not (x `elem` " ")] | ls <- (lines str)]
+translateInput str = [(\ [a, b] -> (a,b)) [x | x <- ls, x `notElem` " "] | ls <- lines str]
 
 getScore :: (Char, Char) -> Int
 getScore ('A', 'X') = 4
@@ -19,8 +19,7 @@ getScore ('C', 'Z') = 6
 getScore _ = error "Invalid Input Value [Error 2]"
 
 getTotalScores :: [(Char, Char)] -> Int
-getTotalScores (x:xs) = getScore x + getTotalScores xs
-getTotalScores [] = 0
+getTotalScores = foldr ((+) .  getScore) 0
 
 main = do
         handle <- openFile "d2/d2.txt" ReadMode

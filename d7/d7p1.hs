@@ -15,7 +15,7 @@ type Zipper = (FileTree, Trail)
 
 -- Methods to navigate the filesystem
 goDir :: Zipper -> String -> Zipper
-goDir zipper@(Dir currentName currentContents, trail) dirName | dirExists $ findDir currentContents dirName = ((\(Just dir) -> dir) $ findDir currentContents dirName, ((History currentName (filter ((/=) ((\(Just dir) -> dir) $ findDir currentContents dirName)) currentContents)):trail))
+goDir zipper@(Dir currentName currentContents, trail) dirName | dirExists $ findDir currentContents dirName = ((\(Just dir) -> dir) $ findDir currentContents dirName, History currentName (filter (((\(Just dir) -> dir) $ findDir currentContents dirName) /=) currentContents):trail)
                                                               | otherwise = zipper
     where
         findDir :: [FileTree] -> String -> Maybe FileTree
@@ -37,20 +37,20 @@ goRoot zipper@(_, []) = zipper
 
 -- Methods to edit the filesystem
 makeDir :: Zipper -> String -> Zipper
-makeDir zipper@(Dir name contents, trail) dirName | (Dir dirName []) `elem` contents = zipper
-                                                  | otherwise = (Dir name ((Dir dirName []):contents), trail)
+makeDir zipper@(Dir name contents, trail) dirName | Dir dirName [] `elem` contents = zipper
+                                                  | otherwise = (Dir name (Dir dirName []:contents), trail)
 makeDir (File _ _, _) _ = error "Should not run makeDir on a File"
 
 makeFile :: Zipper -> String -> Int -> Zipper
-makeFile zipper@(Dir name contents, trail) fileName fileSize | (File fileName fileSize) `elem` contents = zipper
-                                                             | otherwise = (Dir name ((File fileName fileSize):contents), trail)
+makeFile zipper@(Dir name contents, trail) fileName fileSize | File fileName fileSize `elem` contents = zipper
+                                                             | otherwise = (Dir name (File fileName fileSize:contents), trail)
 makeFile (File _ _, _) _ _ = error "Should not run makeFile on a File"
 
 -- Getting Info
 getSum :: [FileTree] -> Int
 getSum [] = 0
-getSum ((Dir _ cs):xs) = (getSum cs) + (getSum xs)
-getSum ((File _ x):xs) = x + (getSum xs)
+getSum ((Dir _ cs):xs) = getSum cs + getSum xs
+getSum ((File _ x):xs) = x + getSum xs
 
 dirSum :: FileTree -> Int
 dirSum (Dir _ xs) = getSum xs
@@ -62,14 +62,14 @@ zipperSum zipper = (\(fs,_) -> dirSum fs) (goRoot zipper)
 -- Creating the filesystem
 translateInput :: String -> Zipper
 translateInput [] = (Dir "/" [], [])
-translateInput str = runCommands (filter ((/=) "$ ls") (lines str)) (Dir "/" [], [])
+translateInput str = runCommands (filter ("$ ls" /=) (lines str)) (Dir "/" [], [])
 
 runCommands :: [String] -> Zipper -> Zipper
 runCommands [] zipper = goRoot zipper
 runCommands ("$ cd ..":xs) zipper = runCommands xs (goUp zipper)
 runCommands (('$':' ':'c':'d':' ':x):xs) zipper = runCommands xs (goDir zipper x)
 runCommands (('d':'i':'r':' ':x):xs) zipper = runCommands xs (makeDir zipper x)
-runCommands (x:xs) zipper = runCommands xs ((\(n:s:[]) -> makeFile zipper s (read n)) $ splitOn " " x)
+runCommands (x:xs) zipper = runCommands xs ((\[n, s] -> makeFile zipper s (read n)) $ splitOn " " x)
 
 -- Part 1
 

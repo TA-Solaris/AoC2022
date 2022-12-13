@@ -7,7 +7,7 @@ import Data.List (sort)
 
 translateInput :: String -> [[Int]]
 translateInput [] = []
-translateInput str = [[read x | x <- (lines el)] | el <- (splitOn "\n\n" str)]
+translateInput str = [[read x | x <- lines el] | el <- splitOn "\n\n" str]
 
 getElfSums :: [[Int]] -> [Int]
 getElfSums [] = []
