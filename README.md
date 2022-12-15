@@ -21,6 +21,7 @@
 | [Day 12](https://adventofcode.com/2022/day/12) | [d12p2.hs](d12/d12p2.hs) | ⭐ | ⭐ |
 | [Day 13](https://adventofcode.com/2022/day/13) | [d13p2.hs](d13/d13p2.hs) | ⭐ | ⭐ |
 | [Day 14](https://adventofcode.com/2022/day/14) | [d14p2.hs](d14/d14p2.hs) | ⭐ | ⭐ |
+| [Day 15](https://adventofcode.com/2022/day/15) |  | ⭐ |   |
 <!--- advent_readme_stars table --->
 
 ## Epic Comments
