@@ -33,5 +33,8 @@ I am using a package for splitting strings, you can install it using this comman
 cabal install --lib split
 ```
 
-You should also run files from the root of this repository so that the file pathing can find the input.
+You should also run files from the root of this repository so that the file pathing can find the input. For some of the later ones I suggest compiling with compiler optimisations. Here is a template command:
 
+```
+ghc -O2 d?/d?p2.hs && ./d?d?p2
+```
